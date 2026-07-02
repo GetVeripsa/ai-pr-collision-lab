@@ -22,7 +22,8 @@ def calculate_total(items: dict[str, int]) -> int:
             raise ValueError(f"quantity for {sku!r} must be positive")
         subtotal += unit_price(sku) * quantity
 
-    # Discount rules: none yet. Orders pay the plain subtotal.
-    discount = 0
+    # Discount rules: large carts (subtotal of $100 or more) get a flat
+    # $10 off. Smaller carts pay the plain subtotal.
+    discount = 1000 if subtotal >= 10000 else 0
 
     return subtotal - discount + FLAT_SHIPPING
