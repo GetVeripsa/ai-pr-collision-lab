@@ -59,11 +59,12 @@ gh pr create --repo "$FORK" --base main --head collide-a --title "Demo scenario 
 gh pr create --repo "$FORK" --base main --head collide-b --title "Demo scenario B" --body "Prepared Veripsa sandbox scenario B."
 ```
 
-The `--repo` flag matters. From a fork clone, `gh pr create` resolves the
-**upstream** repository as the base by default, so without `--repo` the PRs
-would open here — where your install cannot see them. You can also open both
-PRs from your fork's **Branches** page in the web UI; if you do, make sure
-the base repository shown in the compare view is your fork, not this one.
+The `--repo` flag matters. Without it, `gh` in a fork clone asks you to run
+`gh repo set-default` — and that picker suggests this **upstream** repository
+first. PRs opened upstream are invisible to the install on your fork, so the
+checks you are waiting for never appear. You can also open both PRs from your
+fork's **Branches** page in the web UI; if you do, make sure the base
+repository shown in the compare view is your fork, not this one.
 
 ### 4. Read the checks
 
