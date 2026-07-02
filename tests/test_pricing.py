@@ -24,3 +24,9 @@ def test_zero_quantity_rejected():
 def test_unknown_sku_rejected():
     with pytest.raises(KeyError):
         calculate_total({"flux-capacitor": 1})
+
+
+def test_bulk_discount_applies_at_ten_units():
+    subtotal = 10 * 900  # ten usb-cables
+    expected = subtotal - subtotal // 20 + FLAT_SHIPPING
+    assert calculate_total({"usb-cable": 10}) == expected
