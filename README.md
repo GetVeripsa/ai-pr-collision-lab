@@ -8,11 +8,9 @@ A small, deliberately boring Python order-pricing service used by the [Veripsa g
 | --- | --- |
 | Guided walkthrough with copy buttons | <https://veripsa.com/try> |
 | Install Veripsa Core | <https://veripsa.com/go/install?source=sandbox_readme> |
-| Product overview | <https://veripsa.com/how-it-works> |
+| Data handling and retention | [`DATA_HANDLING.md`](./DATA_HANDLING.md) |
+| Public integration contract | <https://github.com/GetVeripsa/veripsa-webhook-spec> |
 | Agent usage guide | <https://veripsa.com/docs/with-agents> |
-| Share / quote Veripsa safely | <https://veripsa.com/share> |
-| 日本語の共有キット | <https://veripsa.com/ja/share> |
-| More examples | <https://github.com/GetVeripsa/veripsa-examples> |
 
 ## What's in here
 
@@ -28,6 +26,18 @@ Two prepared long-lived branches:
 | `collide-b` | "Agent B" | Adds a large-cart discount in the same small product area |
 
 Both branches are intentionally small. Each branch is easy to review on its own; the point of the lab is to see the PR-level warning shape when parallel work needs a safer landing order.
+
+## Recorded public run
+
+![A Veripsa comment shows two open PRs, then updates after the leading PR merges](./media/veripsa-two-prs-before-after.gif)
+
+This is a capture of the real public run, not a mockup:
+
+- [PR #1](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/1) held the lane while PR #2 was still open.
+- After PR #1 merged, the managed comment on [PR #2](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/2) changed to **“Cleared — the earlier overlap has resolved.”**
+- A compact [MP4 version](./media/veripsa-two-prs-before-after.mp4) is included for social posts and presentations.
+
+The capture shows public GitHub metadata and Veripsa's public comment only. It does not expose private source, diff bodies, logs, or credentials, and it is evidence of the visible workflow rather than a claim that either change is correct.
 
 ## Walkthrough (short form of [veripsa.com/try](https://veripsa.com/try))
 
@@ -82,3 +92,8 @@ python -m pytest
 ```
 
 Requires Python 3.9+ and `pytest`. The service is intentionally small; it exists to be collided with.
+
+## License
+
+The code and documentation in this lab are available under the
+[MIT License](./LICENSE).
