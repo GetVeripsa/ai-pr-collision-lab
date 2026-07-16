@@ -1,11 +1,13 @@
 # AGENTS.md
 
-This repository uses Veripsa Core to coordinate parallel pull requests before
-they merge. The merge rule for agents is the same one documented in
-[CLAUDE.md](./CLAUDE.md): before merging any PR, read the Veripsa advisory
-check (`gh pr checks <n>` and `gh pr view <n> --comments`) and act on the
-state — merge on **Clear to land**, and on **Wait in line** do NOT merge but
-land in the order the comment gives. Only add `veripsa-ack` on an explicit
-human decision, never to silence the check.
+Veripsa Core is installed once as a GitHub App. It automatically observes pull
+request changes and creates or updates its native GitHub check. When useful, it
+also keeps at most one managed PR comment current. There is no per-agent
+installation, required CLI polling command, copied merge rule, or routine ACK
+step.
 
-Learn more: https://veripsa.com/docs/with-agents
+An agent that already reads GitHub checks can use the Veripsa check and comment
+as ordinary PR context. `veripsa-ack` is an optional, explicit response to a
+specific warning; it is not setup and is not required for normal operation.
+
+Learn more: <https://veripsa.com/docs/with-agents>
