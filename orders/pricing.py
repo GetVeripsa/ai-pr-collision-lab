@@ -11,8 +11,8 @@ from orders.catalog import unit_price
 FLAT_SHIPPING = 500  # cents
 
 
-def calculate_total(items: dict[str, int]) -> int:
-    """Return the order total in cents for a ``{sku: quantity}`` mapping."""
+def calculate_total(items: dict[str, int], currency: str) -> int:
+    """Return the order total for a ``{sku: quantity}`` mapping in ``currency`` minor units."""
     if not items:
         raise ValueError("an order needs at least one item")
 
