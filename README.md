@@ -97,3 +97,5 @@ Requires Python 3.9+ and `pytest`. The service is intentionally small; it exists
 
 The code and documentation in this lab are available under the
 [MIT License](./LICENSE).
+
+<!-- probe: verdict-liveness check 2026-07-17 -->
