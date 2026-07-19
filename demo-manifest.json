@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0.0",
+  "compatiblePublicContractVersion": "1.0.0",
+  "repository": "GetVeripsa/ai-pr-collision-lab",
+  "baseBranch": "main",
+  "fixtureBaseCommit": "03f70bef401b65e0c275c8b34cf9fc6d83f85379",
+  "scenarios": [
+    {
+      "branch": "collide-a",
+      "pretendAuthor": "Agent A",
+      "purpose": "Add a bulk discount inside calculate_total.",
+      "expectedChangedPaths": [
+        "orders/pricing.py",
+        "tests/test_pricing.py"
+      ],
+      "expectedTestCommand": "python -m pytest -q",
+      "expectedTestResult": "pass"
+    },
+    {
+      "branch": "collide-b",
+      "pretendAuthor": "Agent B",
+      "purpose": "Add a large-cart discount in the same pricing area.",
+      "expectedChangedPaths": [
+        "orders/pricing.py",
+        "tests/test_pricing.py"
+      ],
+      "expectedTestCommand": "python -m pytest -q",
+      "expectedTestResult": "pass"
+    }
+  ],
+  "recordedRun": {
+    "captureDate": "2026-07-16",
+    "captureCommit": "03f70bef401b65e0c275c8b34cf9fc6d83f85379",
+    "pullRequests": [
+      1,
+      2
+    ]
+  },
+  "agentStates": [
+    {
+      "token": "Clear to land",
+      "action": "May proceed in the suggested order after normal tests/review; this is not correctness approval."
+    },
+    {
+      "token": "Heads up",
+      "action": "Read the context and coordinate when the named overlap is relevant."
+    },
+    {
+      "token": "Wait in line",
+      "action": "Do not merge before the named earlier change unless a human explicitly chooses the override path."
+    },
+    {
+      "token": "Paused (acknowledge to proceed)",
+      "action": "A material coupling is unacknowledged; follow repository policy and do not auto-apply veripsa-ack."
+    },
+    {
+      "token": "Acknowledged",
+      "action": "An explicit proceed decision is recorded; it is not a review approval."
+    },
+    {
+      "token": "Unknown",
+      "action": "Treat as not Clear; review and coordinate manually."
+    }
+  ]
+}

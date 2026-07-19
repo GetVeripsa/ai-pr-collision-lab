@@ -1,10 +1,9 @@
 # ai-pr-collision-lab
 
 A small, deliberately boring Python order-pricing service used by the
-[Veripsa guided walkthrough](https://veripsa.com/try). It exists so you can see
-what a Veripsa Core check looks like on a pair of open pull requests that need
-collision or landing-order attention — without touching a repository you care
-about.
+[Veripsa guided walkthrough](https://veripsa.com/try). It lets you see a real
+Veripsa Core check on two open pull requests that need collision or landing-order
+attention, without touching a repository you care about.
 
 ## Start here
 
@@ -13,124 +12,141 @@ about.
 | Guided walkthrough with copy buttons | <https://veripsa.com/try> |
 | Collision walkthrough and real output | <https://veripsa.com/collision> |
 | Install Veripsa Core | <https://veripsa.com/go/install?source=sandbox_readme> |
+| Canonical fixture manifest | [`demo-manifest.json`](./demo-manifest.json) |
+| Public integration contract v1.0.0 | <https://github.com/GetVeripsa/veripsa-webhook-spec/tree/v1.0.0> |
 | Data handling and retention | [`DATA_HANDLING.md`](./DATA_HANDLING.md) |
-| Public integration contract | <https://github.com/GetVeripsa/veripsa-webhook-spec> |
 | Agent usage guide | <https://veripsa.com/docs/with-agents> |
 
-## What's in here
+## What is in this repository
 
-- `orders/pricing.py` — order totals. The file both scenarios edit.
+- `orders/pricing.py` — order totals; both prepared scenarios edit it.
 - `orders/catalog.py` — a tiny in-memory product catalog.
 - `tests/test_pricing.py` — plain pytest tests.
+- `demo-manifest.json` — the machine-readable authority for fixture branches,
+  their shared base, expected changed paths, tests, recorded-run metadata, and
+  compatible public-contract version.
+- `scripts/verify_fixtures.py` — verifies the long-lived branches against that
+  manifest from a full clone.
 
 Two prepared long-lived branches:
 
-| Branch | Pretend author | What it changes |
+| Branch | Pretend author | Purpose |
 | --- | --- | --- |
-| `collide-a` | "Agent A" | Adds a bulk discount inside `calculate_total` in `orders/pricing.py` |
-| `collide-b` | "Agent B" | Adds a large-cart discount in the same small product area |
+| `collide-a` | Agent A | Add a bulk discount inside calculate_total. |
+| `collide-b` | Agent B | Add a large-cart discount in the same pricing area. |
 
-Both branches are intentionally small. Each branch is easy to review on its own;
-the point of the lab is to see the PR-level signal when parallel work needs
-collision or landing-order attention.
+Each branch is small and passes its tests independently. Both must keep the
+recorded fixture base
+`03f70bef401b65e0c275c8b34cf9fc6d83f85379`, and each must differ from it only
+in `orders/pricing.py` and `tests/test_pricing.py`. CI checks those invariants;
+README prose is not the fixture authority.
 
 ## Recorded public run
 
 ![A Veripsa comment shows two open PRs, then updates after the leading PR merges](./media/veripsa-two-prs-before-after.gif)
 
-This is a capture of the real public run, not a mockup:
+The real public run was captured on **2026-07-16** at commit
+[`03f70bef401b65e0c275c8b34cf9fc6d83f85379`](https://github.com/GetVeripsa/ai-pr-collision-lab/commit/03f70bef401b65e0c275c8b34cf9fc6d83f85379),
+compatible with public contract **v1.0.0**:
 
-- [PR #1](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/1) held the lane while PR #2 was still open.
-- After PR #1 merged, the managed comment on [PR #2](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/2) changed to **“Cleared — the earlier overlap has resolved.”**
-- A compact [MP4 version](./media/veripsa-two-prs-before-after.mp4) is included for social posts and presentations.
+- [PR #1](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/1) held the
+  earlier position while PR #2 was open.
+- [PR #2](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/2) updated after
+  the earlier PR landed.
+- A compact [MP4 version](./media/veripsa-two-prs-before-after.mp4) is included
+  for social posts and presentations.
+- Immutable media links: [GIF](https://github.com/GetVeripsa/ai-pr-collision-lab/raw/03f70bef401b65e0c275c8b34cf9fc6d83f85379/media/veripsa-two-prs-before-after.gif)
+  and [MP4](https://github.com/GetVeripsa/ai-pr-collision-lab/raw/03f70bef401b65e0c275c8b34cf9fc6d83f85379/media/veripsa-two-prs-before-after.mp4).
 
-The capture shows public GitHub metadata and Veripsa's public comment only. It
-does not expose private source, diff bodies, logs, or credentials, and it is
-evidence of the visible workflow rather than a claim that either change is
-correct or safe to merge.
+This is a historical capture of the visible GitHub workflow, not a frozen copy
+contract. Human sentence copy may evolve. Integrations should consume the
+current machine contract instead of parsing prose from the recording. The
+capture does not assert that either change is correct or safe to merge.
 
-## Walkthrough (short form of [veripsa.com/try](https://veripsa.com/try))
+## Walkthrough
 
-The guided version with copy buttons lives at **https://veripsa.com/try**. This
-README is the source of truth for branch names and repo layout.
+### 1. Fork this repository with all branches
 
-### 1. Fork this repository
-
-Fork it to your own account. **The two scenario branches must come along:**
+The two scenario branches must come along:
 
 - Web UI: on the fork page, **uncheck** "Copy the `main` branch only".
-- CLI: `gh repo fork GetVeripsa/ai-pr-collision-lab --clone` — the CLI
-  copies all branches by default and clones your fork in one step.
+- CLI: `gh repo fork GetVeripsa/ai-pr-collision-lab --clone` copies all branches
+  by default and clones your fork in one step.
 
-If your fork ended up with only `main`, delete the fork and fork again with the
-checkbox unchecked.
+If your fork contains only `main`, delete it and fork again with all branches.
 
 ### 2. Install Veripsa Core on your fork
 
 Install from
-[veripsa.com/go/install](https://veripsa.com/go/install?source=sandbox_readme):
-choose **Only select repositories** and pick your fork. Veripsa runs where it is
-installed — on **your fork**, not on this upstream repository. No sign-up or
-credit card is required for the current early-access flow.
+[veripsa.com/go/install](https://veripsa.com/go/install?source=sandbox_readme),
+choose **Only select repositories**, and select your fork. Veripsa runs on the
+repository where it is installed, not on this upstream repository. No sign-up
+or credit card is required for the current early-access flow.
 
-Give the first ingest a moment to finish before opening the PRs in Step 3; a
-brand-new install can briefly report a PR as Unknown.
+Give the initial ingest a moment before opening the PRs; a brand-new install can
+briefly report `Unknown` while its repository view is becoming current.
 
-### 3. Open the two prepared PRs — on your fork
+### 3. Open both prepared PRs on your fork
 
 From a clone of your fork:
 
 ```sh
 FORK="$(gh api user -q .login)/ai-pr-collision-lab"
-gh pr create --repo "$FORK" --base main --head collide-a --title "Demo scenario A" --body "Prepared Veripsa sandbox scenario A."
-gh pr create --repo "$FORK" --base main --head collide-b --title "Demo scenario B" --body "Prepared Veripsa sandbox scenario B."
+gh pr create --repo "$FORK" --base main --head collide-a \
+  --title "Demo scenario A" --body "Prepared Veripsa sandbox scenario A."
+gh pr create --repo "$FORK" --base main --head collide-b \
+  --title "Demo scenario B" --body "Prepared Veripsa sandbox scenario B."
 ```
 
-The `--repo` flag matters. Without it, `gh` in a fork clone asks you to run
-`gh repo set-default` — and that picker suggests this **upstream** repository
-first. PRs opened upstream are invisible to the install on your fork, so the
-checks you are waiting for never appear. You can also open both PRs from your
-fork's **Branches** page in the web UI; if you do, make sure the base repository
-shown in the compare view is your fork, not this one.
+The `--repo` flag matters. Without it, a fork clone can default to this upstream
+repository. PRs opened upstream are invisible to an App installation on your
+fork, so the expected checks will not appear there.
 
-### 4. Read the checks
+### 4. Read the GitHub surfaces
 
-Each PR gets one check, named exactly `Veripsa`. Open the two PRs side by side,
-read the check summary and PR comment, then click **Details** for the short
-explanation behind the signal.
+Each covered PR gets one check named exactly `Veripsa`. Read its title, summary,
+and—when present—the single managed PR comment. Then use **Details** for the
+short explanation behind the signal.
 
 The four base traffic signals are **Clear**, **Heads up**, **Wait in line**, and
-**Unknown**. A material coupling can also show **Paused (acknowledge to
-proceed)** as an `action_required` control overlay; Paused is not a fifth traffic
-verdict. It only becomes a hard merge hold when you make the Veripsa check
-required through GitHub policy.
+**Unknown**. A material coupling can add **Paused (acknowledge to proceed)** as
+an `action_required` control overlay; Paused is not a fifth base verdict. It
+holds a merge only when repository branch protection or a ruleset makes the
+Veripsa check required.
 
-### 5. Then evaluate on a repository you maintain
+Clear is not merge approval or correctness proof. Unknown is not Clear.
+`veripsa-ack` records an explicit proceed decision for one surfaced coupling; it
+is not setup, a routine agent action, or a review approval.
 
-This sandbox shows the shape of the check surface. Install on a repository you
-actually work in and read the checks on your real PR traffic before changing any
-merge policy.
+### 5. Evaluate on a repository you maintain
 
-## How to read the demo
+The sandbox demonstrates the public check/comment shape. Install on a repository
+you actually work in and observe real PR traffic before changing merge policy.
 
-- The check is **advisory by default**. Whether it gates a merge is a
-  branch-protection or ruleset decision on your side, not something the App
-  forces.
-- Veripsa Core is not an AI code reviewer. It may read file contents transiently
-  to extract structure, but it does not retain or display source file bodies or
-  diff contents.
-- Clear is not merge approval or correctness proof. Unknown is not Clear.
-- Nothing runs on this upstream repository on your behalf. Your fork plus your
-  install is the whole demo.
+## Run and verify the fixture
 
-## Running the code (optional)
+Install the declared test dependency and run the main tests plus documentation
+parity:
 
 ```sh
-python -m pytest
+python -m pip install -e '.[test]'
+python -m pytest -q
+python scripts/check_docs.py
 ```
 
-Requires Python 3.9+ and `pytest`. The service is intentionally small; it exists
-to be collided with.
+From a full clone, verify the long-lived branches, exact merge base, exact diff
+scope, and each branch's independent test result:
+
+```sh
+git fetch origin main collide-a collide-b
+python scripts/verify_fixtures.py
+```
+
+Forking or cloning this static repository sends nothing to Veripsa. Data reaches
+Veripsa Core only after you install the GitHub App on a repository you control.
+The App may read file/diff data transiently to derive its advisory, but it does
+not retain or display source-file bodies or diff bodies. See
+[`DATA_HANDLING.md`](./DATA_HANDLING.md) for the boundary.
 
 ## License
 
