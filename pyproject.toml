@@ -1,0 +1,13 @@
+[project]
+name = "ai-pr-collision-lab"
+version = "1.0.0"
+description = "Reproducible Veripsa two-PR collision walkthrough fixture"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
