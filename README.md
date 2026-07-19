@@ -77,9 +77,9 @@ Each PR gets one check, named exactly `Veripsa`. Open the two PRs side by side, 
 
 ### 5. Then evaluate on a repository you maintain
 
-This sandbox shows the shape of the check surface, nothing more. It is not a benchmark and it does not predict behaviour on your codebase. Install on a repository you actually work in and read the checks on real PR traffic before changing any merge policy.
+This sandbox shows the shape of the check surface. Install on a repository you actually work in and read the checks on your real PR traffic before changing any merge policy.
 
-## Honest notes
+## How to read the demo
 
 - The check is **advisory by default**. Whether it gates a merge is a branch-protection decision on your side, not something the App forces.
 - Veripsa Core is not an AI code reviewer. It does not review style or content, and it does not store source file bodies.
