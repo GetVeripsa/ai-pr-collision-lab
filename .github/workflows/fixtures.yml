@@ -12,12 +12,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
       - run: python -m pip install --disable-pip-version-check -e '.[test]'
-      - run: git fetch origin main collide-a collide-b
+      # Immutable fixture source lives on annotated tags, not on branches.
+      - run: git fetch origin main 'refs/tags/fixture-v1-*:refs/tags/fixture-v1-*'
       - run: python -m pytest -q
       - run: python scripts/check_docs.py
       - run: python scripts/verify_fixtures.py
+      # Safety invariant: the materializer must refuse to target the upstream
+      # repository. This runs without network or credentials.
+      - name: materializer refuses to push to upstream
+        run: |
+          out="$(python scripts/materialize_fixtures.py --fork GetVeripsa/ai-pr-collision-lab --push 2>&1)" && {
+            echo "materializer did not refuse the upstream repository" >&2; exit 1; }
+          echo "$out" | grep -q "refusing to target the upstream repository" || {
+            echo "materializer refused for the wrong reason:" >&2; echo "$out" >&2; exit 1; }

@@ -1,9 +1,9 @@
 """Order pricing for the demo order service.
 
-Both walkthrough branches (``collide-a`` and ``collide-b``) change the
-discount section of ``calculate_total`` below. That is deliberate: it gives
-you two pull requests that edit the same lines of the same file, which is
-the situation the walkthrough exists to demonstrate.
+Both prepared scenarios (materialized into your fork as ``collide-a`` and
+``collide-b``) change the discount section of ``calculate_total`` below. That
+is deliberate: it gives you two pull requests that edit the same lines of the
+same file, which is the situation the walkthrough exists to demonstrate.
 """
 
 from orders.catalog import unit_price
