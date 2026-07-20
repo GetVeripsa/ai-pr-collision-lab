@@ -106,7 +106,12 @@ def verify_scenario(repo: Path, base: str, scenario: dict, skip_tests: bool) -> 
             tree = Path(td) / "tree"
             run("git", "worktree", "add", "--detach", str(tree), sha, cwd=repo)
             try:
-                result = subprocess.run(shlex.split(command), cwd=tree, text=True, capture_output=True)
+                argv = shlex.split(command)
+                # Run the scenario tests with the same interpreter that launched
+                # this script; macOS ships only python3, not a bare "python".
+                if argv and argv[0] in ("python", "python3"):
+                    argv[0] = sys.executable
+                result = subprocess.run(argv, cwd=tree, text=True, capture_output=True)
                 if result.returncode:
                     fail(f"{output}: scenario tests failed at {sha[:12]}")
             finally:

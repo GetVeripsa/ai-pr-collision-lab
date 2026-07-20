@@ -8,7 +8,7 @@
   "reproducibleFixture": {
     "mode": "materialize",
     "sourceTagPrefix": "fixture-v1-",
-    "command": "python scripts/materialize_fixtures.py --fork <owner>/ai-pr-collision-lab --push",
+    "command": "python3 scripts/materialize_fixtures.py --fork <owner>/ai-pr-collision-lab --push",
     "note": "Each scenario is stored as an immutable annotated tag on this repository. The materializer recreates the scenario branches in your own fork from those tags; it never creates or updates a branch on this upstream repository."
   },
   "scenarios": [
@@ -22,7 +22,7 @@
         "orders/pricing.py",
         "tests/test_pricing.py"
       ],
-      "expectedTestCommand": "python -m pytest -q",
+      "expectedTestCommand": "python3 -m pytest -q",
       "expectedTestResult": "pass"
     },
     {
@@ -35,7 +35,7 @@
         "orders/pricing.py",
         "tests/test_pricing.py"
       ],
-      "expectedTestCommand": "python -m pytest -q",
+      "expectedTestCommand": "python3 -m pytest -q",
       "expectedTestResult": "pass"
     }
   ],
