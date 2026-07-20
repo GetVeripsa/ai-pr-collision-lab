@@ -19,7 +19,7 @@ jobs:
           cache: pip
       - run: python -m pip install --disable-pip-version-check -e '.[test]'
       # Immutable fixture source lives on annotated tags, not on branches.
-      - run: git fetch origin main 'refs/tags/fixture-v1-*:refs/tags/fixture-v1-*'
+      - run: git fetch origin 'refs/heads/main:refs/remotes/origin/main' 'refs/tags/fixture-v1-*:refs/tags/fixture-v1-*'
       - run: python -m pytest -q
       - run: python scripts/check_docs.py
       - run: python scripts/verify_fixtures.py

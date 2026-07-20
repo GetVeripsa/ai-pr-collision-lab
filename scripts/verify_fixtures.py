@@ -37,6 +37,20 @@ def resolve_commit(repo: Path, ref: str) -> str:
     return result.stdout.strip()
 
 
+def resolve_base_branch(repo: Path, branch: str) -> str:
+    """Resolve the mainline tip across full clones and CI PR checkouts.
+
+    A local full clone has ``main``; a pull_request checkout is detached with no
+    local branch, so fall back to the fetched remote ref (and finally HEAD, the
+    PR merge commit, which still contains the fixture base)."""
+    for candidate in (branch, f"refs/heads/{branch}", f"refs/remotes/origin/{branch}",
+                      f"origin/{branch}", "FETCH_HEAD", "HEAD"):
+        if run("git", "rev-parse", "--verify", "--quiet", f"{candidate}^{{commit}}",
+               cwd=repo, check=False).returncode == 0:
+            return candidate
+    raise SystemExit(f"could not resolve base branch {branch!r}")
+
+
 def test_commit(repo: Path, sha: str, command: str) -> None:
     with tempfile.TemporaryDirectory(prefix="veripsa-fixture-") as td:
         worktree = Path(td) / "tree"
@@ -64,12 +78,12 @@ def main() -> None:
     if run("git", "cat-file", "-e", f"{base}^{{commit}}", cwd=repo, check=False).returncode:
         raise SystemExit(f"fixture base commit is unavailable: {base}; fetch full history")
 
-    main_ref = manifest["baseBranch"]
+    main_ref = resolve_base_branch(repo, manifest["baseBranch"])
     if run("git", "merge-base", "--is-ancestor", base, main_ref, cwd=repo, check=False).returncode:
-        raise SystemExit(f"{main_ref} is not descended from the recorded fixture base")
+        raise SystemExit(f"{manifest['baseBranch']} ({main_ref}) is not descended from the recorded fixture base")
     if not args.skip_tests:
         test_commit(repo, resolve_commit(repo, main_ref), "python -m pytest -q")
-        print(f"{main_ref}: tests verified")
+        print(f"{manifest['baseBranch']}: tests verified")
 
     for scenario in manifest["scenarios"]:
         ref = scenario["sourceRef"]
