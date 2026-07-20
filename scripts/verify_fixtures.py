@@ -21,6 +21,7 @@ import argparse
 import json
 import shlex
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -56,7 +57,12 @@ def test_commit(repo: Path, sha: str, command: str) -> None:
         worktree = Path(td) / "tree"
         run("git", "worktree", "add", "--detach", str(worktree), sha, cwd=repo)
         try:
-            result = subprocess.run(shlex.split(command), cwd=worktree, text=True, capture_output=True)
+            argv = shlex.split(command)
+            # macOS ships only python3; run the scenario tests with the same
+            # interpreter that launched this script rather than a bare "python".
+            if argv and argv[0] in ("python", "python3"):
+                argv[0] = sys.executable
+            result = subprocess.run(argv, cwd=worktree, text=True, capture_output=True)
             if result.returncode:
                 raise SystemExit(f"{sha[:12]}: tests failed\n{result.stdout}\n{result.stderr}")
         finally:

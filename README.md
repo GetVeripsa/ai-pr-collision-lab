@@ -107,11 +107,11 @@ briefly report `Unknown` while its repository view is becoming current.
 
 From a clone of your fork (or of this repository), create the scenario branches
 on your fork from the immutable source tags. The canonical reproduce command is
-`python scripts/materialize_fixtures.py --fork <owner>/ai-pr-collision-lab --push`:
+`python3 scripts/materialize_fixtures.py --fork <owner>/ai-pr-collision-lab --push`:
 
 ```sh
 FORK="$(gh api user -q .login)/ai-pr-collision-lab"
-python scripts/materialize_fixtures.py --fork "$FORK" --push
+python3 scripts/materialize_fixtures.py --fork "$FORK" --push
 ```
 
 The materializer verifies each source against the manifest, then creates
@@ -163,8 +163,8 @@ parity:
 
 ```sh
 python -m pip install -e '.[test]'
-python -m pytest -q
-python scripts/check_docs.py
+python3 -m pytest -q
+python3 scripts/check_docs.py
 ```
 
 From a full clone, fetch the immutable source tags and verify each scenario's
@@ -172,7 +172,7 @@ exact source commit, merge base, diff scope, and independent test result:
 
 ```sh
 git fetch origin main 'refs/tags/fixture-v1-*:refs/tags/fixture-v1-*'
-python scripts/verify_fixtures.py
+python3 scripts/verify_fixtures.py
 ```
 
 Forking or cloning this static repository sends nothing to Veripsa. Data reaches
