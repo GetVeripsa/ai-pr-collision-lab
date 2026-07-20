@@ -32,5 +32,5 @@ def test_large_cart_flat_discount():
 
 
 def test_no_large_cart_discount_small_order():
-    # 1 mouse = 1900 cents subtotal is below $50 -> no discount.
+    # 1 mouse = 1900 cents subtotal is below $100 -> no discount.
     assert calculate_total({"mouse": 1}) == 1900 + FLAT_SHIPPING
