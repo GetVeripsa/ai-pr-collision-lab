@@ -38,7 +38,7 @@
   },
   "agentStates": [
     {
-      "token": "Clear to land",
+      "token": "Clear",
       "action": "May proceed in the suggested order after normal tests/review; this is not correctness approval."
     },
     {

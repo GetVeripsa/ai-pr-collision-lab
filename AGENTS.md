@@ -2,7 +2,7 @@
 
 This file is parity-checked against [`demo-manifest.json`](./demo-manifest.json) and public contract v1.0.0.
 
-- **Clear to land** — May proceed in the suggested order after normal tests/review; this is not correctness approval.
+- **Clear** — May proceed in the suggested order after normal tests/review; this is not correctness approval.
 - **Heads up** — Read the context and coordinate when the named overlap is relevant.
 - **Wait in line** — Do not merge before the named earlier change unless a human explicitly chooses the override path.
 - **Paused (acknowledge to proceed)** — A material coupling is unacknowledged; follow repository policy and do not auto-apply veripsa-ack.
