@@ -22,30 +22,37 @@ attention, without touching a repository you care about.
 - `orders/pricing.py` — order totals; both prepared scenarios edit it.
 - `orders/catalog.py` — a tiny in-memory product catalog.
 - `tests/test_pricing.py` — plain pytest tests.
-- `demo-manifest.json` — the machine-readable authority for fixture branches,
-  their shared base, expected changed paths, tests, recorded-run metadata, and
-  compatible public-contract version.
-- `scripts/verify_fixtures.py` — verifies the long-lived branches against that
+- `demo-manifest.json` — the machine-readable authority for the scenarios:
+  their immutable source refs and commits, the branch each one materializes to,
+  the shared fixture base, expected changed paths, tests, recorded-run and
+  live-proof metadata, and the compatible public-contract version.
+- `scripts/materialize_fixtures.py` — recreates the scenario branches in a fork
+  you control, from the immutable source tags.
+- `scripts/verify_fixtures.py` — verifies the immutable sources against the
   manifest from a full clone.
 
-Two prepared long-lived branches:
+### The two prepared scenarios
 
-| Branch | Pretend author | Purpose |
-| --- | --- | --- |
-| `collide-a` | Agent A | Add a bulk discount inside calculate_total. |
-| `collide-b` | Agent B | Add a large-cart discount in the same pricing area. |
+Both scenarios are stored as **immutable annotated tags** on this repository,
+not as long-lived branches. You materialize them into your own fork; no
+scenario branch is ever created on this shared upstream repository.
 
-Each branch is small and passes its tests independently. Both must keep the
+| Materializes to | Source tag | Pretend author | Purpose |
+| --- | --- | --- | --- |
+| `collide-a` | `fixture-v1-agent-a` | Agent A | Add a bulk discount inside calculate_total. |
+| `collide-b` | `fixture-v1-agent-b` | Agent B | Add a large-cart discount in the same pricing area. |
+
+Each scenario is small and passes its tests independently. Both keep the
 recorded fixture base
-`03f70bef401b65e0c275c8b34cf9fc6d83f85379`, and each must differ from it only
-in `orders/pricing.py` and `tests/test_pricing.py`. CI checks those invariants;
-README prose is not the fixture authority.
+`03f70bef401b65e0c275c8b34cf9fc6d83f85379`, and each differs from it only
+in `orders/pricing.py` and `tests/test_pricing.py`. CI checks those invariants
+against the tags; README prose is not the fixture authority.
 
-## Recorded public run
+## Historical recorded run
 
 ![A Veripsa comment shows two open PRs, then updates after the leading PR merges](./media/veripsa-two-prs-before-after.gif)
 
-The real public run was captured on **2026-07-16** at commit
+The original public run was captured on **2026-07-16** at commit
 [`03f70bef401b65e0c275c8b34cf9fc6d83f85379`](https://github.com/GetVeripsa/ai-pr-collision-lab/commit/03f70bef401b65e0c275c8b34cf9fc6d83f85379),
 compatible with public contract **v1.0.0**:
 
@@ -61,19 +68,29 @@ compatible with public contract **v1.0.0**:
 This is a historical capture of the visible GitHub workflow, not a frozen copy
 contract. Human sentence copy may evolve. Integrations should consume the
 current machine contract instead of parsing prose from the recording. The
-capture does not assert that either change is correct or safe to merge.
+capture does not assert that either change is correct or safe to merge. PRs #1
+and #2 are closed history; they are not live surfaces.
+
+## Current live proof
+
+Two pull requests are kept open on this upstream repository so a live Veripsa
+Core check is always observable:
+[PR #13](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/13) leads and
+[PR #14](https://github.com/GetVeripsa/ai-pr-collision-lab/pull/14) follows in
+the same pricing area. Read their `Veripsa` checks to see the current output.
+They are proof to look at, not the fixture to reproduce — reproduce the fixture
+in your own fork with the walkthrough below.
 
 ## Walkthrough
 
-### 1. Fork this repository with all branches
+### 1. Fork this repository
 
-The two scenario branches must come along:
+A `main`-only fork is fine — the scenario branches are created for you in
+step 3.
 
-- Web UI: on the fork page, **uncheck** "Copy the `main` branch only".
-- CLI: `gh repo fork GetVeripsa/ai-pr-collision-lab --clone` copies all branches
-  by default and clones your fork in one step.
-
-If your fork contains only `main`, delete it and fork again with all branches.
+- Web UI: fork from the repository page. Copying the `main` branch only is fine.
+- CLI: `gh repo fork GetVeripsa/ai-pr-collision-lab --clone` forks and clones in
+  one step.
 
 ### 2. Install Veripsa Core on your fork
 
@@ -86,9 +103,25 @@ or credit card is required for the current early-access flow.
 Give the initial ingest a moment before opening the PRs; a brand-new install can
 briefly report `Unknown` while its repository view is becoming current.
 
-### 3. Open both prepared PRs on your fork
+### 3. Materialize the scenarios into your fork
 
-From a clone of your fork:
+From a clone of your fork (or of this repository), create the scenario branches
+on your fork from the immutable source tags. The canonical reproduce command is
+`python scripts/materialize_fixtures.py --fork <owner>/ai-pr-collision-lab --push`:
+
+```sh
+FORK="$(gh api user -q .login)/ai-pr-collision-lab"
+python scripts/materialize_fixtures.py --fork "$FORK" --push
+```
+
+The materializer verifies each source against the manifest, then creates
+`collide-a` and `collide-b` on your fork. It is idempotent (a re-run is a no-op
+when the branches already match), it never force-pushes, and it refuses to
+target this upstream repository. Run it without `--push` first to see the plan.
+
+### 4. Open both prepared PRs on your fork
+
+From the same clone:
 
 ```sh
 FORK="$(gh api user -q .login)/ai-pr-collision-lab"
@@ -102,7 +135,7 @@ The `--repo` flag matters. Without it, a fork clone can default to this upstream
 repository. PRs opened upstream are invisible to an App installation on your
 fork, so the expected checks will not appear there.
 
-### 4. Read the GitHub surfaces
+### 5. Read the GitHub surfaces
 
 Each covered PR gets one check named exactly `Veripsa`. Read its title, summary,
 and—when present—the single managed PR comment. Then use **Details** for the
@@ -118,7 +151,7 @@ Clear is not merge approval or correctness proof. Unknown is not Clear.
 `veripsa-ack` records an explicit proceed decision for one surfaced coupling; it
 is not setup, a routine agent action, or a review approval.
 
-### 5. Evaluate on a repository you maintain
+### 6. Evaluate on a repository you maintain
 
 The sandbox demonstrates the public check/comment shape. Install on a repository
 you actually work in and observe real PR traffic before changing merge policy.
@@ -134,11 +167,11 @@ python -m pytest -q
 python scripts/check_docs.py
 ```
 
-From a full clone, verify the long-lived branches, exact merge base, exact diff
-scope, and each branch's independent test result:
+From a full clone, fetch the immutable source tags and verify each scenario's
+exact source commit, merge base, diff scope, and independent test result:
 
 ```sh
-git fetch origin main collide-a collide-b
+git fetch origin main 'refs/tags/fixture-v1-*:refs/tags/fixture-v1-*'
 python scripts/verify_fixtures.py
 ```
 

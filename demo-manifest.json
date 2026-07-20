@@ -1,14 +1,23 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
   "compatiblePublicContractVersion": "1.0.0",
   "repository": "GetVeripsa/ai-pr-collision-lab",
   "baseBranch": "main",
   "fixtureBaseCommit": "03f70bef401b65e0c275c8b34cf9fc6d83f85379",
+  "fixtureMode": "materialize",
+  "reproducibleFixture": {
+    "mode": "materialize",
+    "sourceTagPrefix": "fixture-v1-",
+    "command": "python scripts/materialize_fixtures.py --fork <owner>/ai-pr-collision-lab --push",
+    "note": "Each scenario is stored as an immutable annotated tag on this repository. The materializer recreates the scenario branches in your own fork from those tags; it never creates or updates a branch on this upstream repository."
+  },
   "scenarios": [
     {
-      "branch": "collide-a",
       "pretendAuthor": "Agent A",
       "purpose": "Add a bulk discount inside calculate_total.",
+      "sourceRef": "fixture-v1-agent-a",
+      "sourceCommit": "f21bd2b52905a864705408a2e21b270dae14407e",
+      "outputBranch": "collide-a",
       "expectedChangedPaths": [
         "orders/pricing.py",
         "tests/test_pricing.py"
@@ -17,9 +26,11 @@
       "expectedTestResult": "pass"
     },
     {
-      "branch": "collide-b",
       "pretendAuthor": "Agent B",
       "purpose": "Add a large-cart discount in the same pricing area.",
+      "sourceRef": "fixture-v1-agent-b",
+      "sourceCommit": "d589350fb9341cbd70b8ead82d4887c1390965ed",
+      "outputBranch": "collide-b",
       "expectedChangedPaths": [
         "orders/pricing.py",
         "tests/test_pricing.py"
@@ -28,13 +39,23 @@
       "expectedTestResult": "pass"
     }
   ],
-  "recordedRun": {
+  "historicalRecordedRun": {
     "captureDate": "2026-07-16",
     "captureCommit": "03f70bef401b65e0c275c8b34cf9fc6d83f85379",
     "pullRequests": [
       1,
       2
-    ]
+    ],
+    "note": "A one-time capture of the visible GitHub workflow on this upstream repository, preserved in ./media. PRs #1 and #2 are closed history, not live surfaces."
+  },
+  "currentLiveProof": {
+    "pullRequests": [
+      13,
+      14
+    ],
+    "leadPullRequest": 13,
+    "followerPullRequest": 14,
+    "note": "Two pull requests kept open on this upstream repository so a live Veripsa Core check is always observable. They are proof, not the reproducible fixture; reproduce the fixture in your own fork with reproducibleFixture.command."
   },
   "agentStates": [
     {
